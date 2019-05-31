@@ -19,17 +19,8 @@ namespace Notes
         {
             var note = (Note)BindingContext;
 
-            if (string.IsNullOrWhiteSpace(note.Filename))
-            {
-                // save
-                var Filename = Path.Combine(App.FolderPath, $"{Path.GetRandomFileName()}.notes.txt");
-                File.WriteAllText(Filename, note.Text);
-            } else
-            {
-                // update 
-                File.WriteAllText(note.Filename, note.Text);
-            }
-
+            note.Date = DateTime.UtcNow;
+            await App.Database.SaveNoteAsync(note);
             await Navigation.PopAsync();
         }
 
@@ -37,10 +28,7 @@ namespace Notes
         {
             var note = (Note)BindingContext;
 
-            if (File.Exists(note.Filename))
-            {
-                File.Delete(note.Filename);
-            }
+            await App.Database.DeleteNoteAsync(note);
 
             await Navigation.PopAsync();
         }
